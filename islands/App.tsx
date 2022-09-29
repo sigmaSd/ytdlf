@@ -120,7 +120,17 @@ function Format(
 ) {
   const triggerDownload = async () => {
     setFmts([]);
-    const directUrl = await fetch("/api/download", {
+
+    await fetch("/api/download", {
+      method: "POST",
+      body: JSON.stringify({
+        url,
+        code: opts.code,
+        method: "getUrl",
+      }),
+    }).then((r) => r.text()).then(setDirectUrl);
+
+    await fetch("/api/download", {
       method: "POST",
       body: JSON.stringify({
         url,
@@ -128,7 +138,6 @@ function Format(
         method: "download",
       }),
     }).then((r) => r.text());
-    setDirectUrl(directUrl);
   };
   return (
     <button

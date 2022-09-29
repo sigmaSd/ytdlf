@@ -42,10 +42,7 @@ export const handler: Handlers = {
   async POST(req) {
     const { url, code, method } = await req.json();
 
-    if (method == "download") {
-      activeYt = null;
-      out = new LogStream(new LogSink());
-
+    if (method == "getUrl") {
       const directUrl = new TextDecoder().decode(
         await Deno.spawn("youtube-dl", {
           args: [url, "-f", code, "-g"],
@@ -53,6 +50,11 @@ export const handler: Handlers = {
           stderr: "inherit",
         }).then((r) => r.stdout),
       );
+      return new Response(directUrl);
+    } else if (method == "download") {
+      activeYt = null;
+      out = new LogStream(new LogSink());
+
       activeYt = Deno.spawnChild("youtube-dl", {
         args: [url, "-f", code, "-o", "%(title)s-%(format)s.%(ext)s"],
         stdout: "piped",
@@ -62,7 +64,7 @@ export const handler: Handlers = {
       await activeYt.stdout.pipeThrough(new TextDecoderStream()).pipeTo(out);
       activeYt.status.then(() => out!.push("DONE"));
 
-      return new Response(directUrl);
+      return new Response();
     } else if (method == "format") {
       if (!url) return new Response("");
       const meta = new TextDecoder().decode(
@@ -101,7 +103,7 @@ export const handler: Handlers = {
         JSON.stringify({ name: meta[0], img: meta[1], fmts: res }),
       );
     } else {
-      throw "unkown method";
+      throw "unkown method: " + method;
     }
   },
   GET() {
