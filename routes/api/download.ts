@@ -46,6 +46,13 @@ export const handler: Handlers = {
       activeYt = null;
       out = new LogStream(new LogSink());
 
+      const directUrl = new TextDecoder().decode(
+        await Deno.spawn("youtube-dl", {
+          args: [url, "-f", code, "-g"],
+          stdout: "piped",
+          stderr: "inherit",
+        }).then((r) => r.stdout),
+      );
       activeYt = Deno.spawnChild("youtube-dl", {
         args: [url, "-f", code, "-o", "%(title)s-%(format)s.%(ext)s"],
         stdout: "piped",
@@ -55,7 +62,7 @@ export const handler: Handlers = {
       await activeYt.stdout.pipeThrough(new TextDecoderStream()).pipeTo(out);
       activeYt.status.then(() => out!.push("DONE"));
 
-      return new Response();
+      return new Response(directUrl);
     } else if (method == "format") {
       if (!url) return new Response("");
       const meta = new TextDecoder().decode(

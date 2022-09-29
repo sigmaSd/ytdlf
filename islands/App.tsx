@@ -6,6 +6,7 @@ export default function App() {
   const [ytOut, setYtOut] = useState("");
   const [fmts, setFmts] = useState<Opts[]>([]);
   const [meta, setMeta] = useState<{ name: string; img: string } | null>();
+  const [directUrl, setDirectUrl] = useState("");
 
   useEffect(() => {
     setInterval(async () => {
@@ -25,6 +26,7 @@ export default function App() {
   const getFormats = async () => {
     setYtOut("");
     setMeta(null);
+    setDirectUrl("");
 
     const { name, img, fmts } = await fetch("/api/download", {
       method: "POST",
@@ -78,6 +80,7 @@ export default function App() {
                 opts={opts}
                 url={url}
                 setFmts={setFmts}
+                setDirectUrl={setDirectUrl}
               />
             ))}
           </div>
@@ -95,27 +98,37 @@ export default function App() {
         >
         </textarea>
       )}
+      {directUrl && (
+        <a
+          class="text-center text-lg text-blue-800"
+          href={directUrl}
+        >
+          Direct Link
+        </a>
+      )}
     </div>
   );
 }
 
 function Format(
-  { opts, url, setFmts }: {
+  { opts, url, setFmts, setDirectUrl }: {
     opts: Opts;
     url: string;
     setFmts: StateUpdater<Opts[]>;
+    setDirectUrl: StateUpdater<string>;
   },
 ) {
   const triggerDownload = async () => {
     setFmts([]);
-    await fetch("/api/download", {
+    const directUrl = await fetch("/api/download", {
       method: "POST",
       body: JSON.stringify({
         url,
         code: opts.code,
         method: "download",
       }),
-    });
+    }).then((r) => r.text());
+    setDirectUrl(directUrl);
   };
   return (
     <button
