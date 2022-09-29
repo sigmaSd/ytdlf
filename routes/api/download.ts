@@ -1,10 +1,10 @@
 import { Handlers } from "$fresh/server.ts";
-import { Opts } from "../../islands/App.tsx";
+import { Opts } from "../../global.ts";
+import { DOWNLOAD_DIR } from "./downloadDir.ts";
 
 class O implements UnderlyingSink<string> {
   #value: string[] = [];
   write?: UnderlyingSinkWriteCallback<string> | undefined = (chunk) => {
-    console.log("writing: ", chunk);
     this.#value.push(chunk);
   };
   read() {
@@ -12,6 +12,9 @@ class O implements UnderlyingSink<string> {
   }
   popFront() {
     return this.#value.shift();
+  }
+  push(s: string) {
+    this.#value.push(s);
   }
 }
 class Z extends WritableStream<string> {
@@ -26,33 +29,42 @@ class Z extends WritableStream<string> {
   popFront() {
     return this.#sink.popFront();
   }
+  push(s: string) {
+    this.#sink.push(s);
+  }
 }
 
-const out = new Z(new O());
-// async function a() {
-//   while (true) {
-//     await new Promise((r) => setTimeout(r, 1000));
-//     console.log("out is: ", out.read());
-//   }
-// }
-// a();
+let out: Z | null = null;
+
+let activeYt: Deno.Child | null = null;
 
 export const handler: Handlers = {
   async POST(req) {
     const { url, code, method } = await req.json();
-    console.log(method);
 
     if (method == "download") {
-      const p = Deno.spawnChild("youtube-dl", {
-        args: [url, "-f", code],
+      activeYt = null;
+      out = new Z(new O());
+
+      activeYt = Deno.spawnChild("youtube-dl", {
+        args: [url, "-f", code, "-o", "%(title)s-%(format)s.%(ext)s"],
         stdout: "piped",
         stderr: "inherit",
+        cwd: DOWNLOAD_DIR,
       });
-      p.ref();
-      await p.stdout.pipeThrough(new TextDecoderStream()).pipeTo(out);
+      await activeYt.stdout.pipeThrough(new TextDecoderStream()).pipeTo(out);
+      activeYt.status.then(() => out!.push("DONE"));
 
-      return new Response("");
+      return new Response();
     } else if (method == "format") {
+      if (!url) return new Response("");
+      const meta = new TextDecoder().decode(
+        await Deno.spawn("youtube-dl", {
+          args: ["-e", "--get-thumbnail", url],
+          stdout: "piped",
+        }).then((r) => r.stdout),
+      ).split("\n");
+
       const raw = await Deno.spawn("youtube-dl", {
         args: ["-F", url],
         stdout: "piped",
@@ -63,24 +75,30 @@ export const handler: Handlers = {
       const lines = new TextDecoder().decode(raw).split("\n");
 
       const s = lines.findIndex((v) => v.startsWith("format"));
+      if (!s) return new Response("");
       for (const line of lines.slice(s + 1)) {
         if (!line) continue;
         const parts = line.split(/\s+/);
 
-        res.push({
+        const fmt = {
           code: parseInt(parts[0]),
           ext: parts[1],
           res: parts[2],
-        });
+        };
+        if (res.find((e) => e.ext == fmt.ext && e.res == fmt.res)) {
+          continue;
+        }
+        res.push(fmt);
       }
-      console.log(res);
-
-      return new Response(JSON.stringify(res));
+      return new Response(
+        JSON.stringify({ name: meta[0], img: meta[1], fmts: res }),
+      );
     } else {
       throw "unkown method";
     }
   },
   GET() {
+    if (!out) return new Response("");
     const line = out.popFront();
     if (!line) return new Response("");
     return new Response(line);
