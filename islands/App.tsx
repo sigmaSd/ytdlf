@@ -8,20 +8,26 @@ export default function App() {
   const [meta, setMeta] = useState<{ name: string; img: string } | null>();
   const [directUrl, setDirectUrl] = useState("");
 
-  useEffect(() => {
-    setInterval(async () => {
-      const line = await fetch("/api/download").then((r) => r.text());
-      if (!line) return;
-      if (line == "DONE") {
-        const downloadDir = await fetch("/api/downloadDir").then((r) =>
-          r.text()
-        );
-        setYtOut("Downloaded video to: " + downloadDir);
-      } else {
-        setYtOut(line);
-      }
-    }, 100);
-  }, []);
+  if (
+    window.location && window.location.href == "https://ytdlf.sigmasd.repl.co/"
+  ) {
+    /**/
+  } else {
+    useEffect(() => {
+      setInterval(async () => {
+        const line = await fetch("/api/download").then((r) => r.text());
+        if (!line) return;
+        if (line == "DONE") {
+          const downloadDir = await fetch("/api/downloadDir").then((r) =>
+            r.text()
+          );
+          setYtOut("Downloaded video to: " + downloadDir);
+        } else {
+          setYtOut(line);
+        }
+      }, 100);
+    }, []);
+  }
 
   const getFormats = async () => {
     setYtOut("");
