@@ -22,7 +22,7 @@ export default function App() {
     }, 100);
   }, []);
 
-  const download = async () => {
+  const getFormats = async () => {
     setYtOut("");
     setMeta(null);
 
@@ -56,15 +56,14 @@ export default function App() {
         transition
         ease-in-out
         m-4
-        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-      "
+        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
           onChange={(e) => setUrl((e.target as HTMLInputElement).value)}
           value={url}
           placeholder="Enter url here"
         />
         <button
           class="bg-red-600 text-white rounded-md font-bold text-lg"
-          onClick={download}
+          onClick={getFormats}
         >
           Download
         </button>
@@ -107,7 +106,7 @@ function Format(
     setFmts: StateUpdater<Opts[]>;
   },
 ) {
-  const f = async () => {
+  const triggerDownload = async () => {
     setFmts([]);
     await fetch("/api/download", {
       method: "POST",
@@ -121,7 +120,7 @@ function Format(
   return (
     <button
       class="border border-blue-600 rounded-md text-lg text-red-800 font-bold"
-      onClick={f}
+      onClick={triggerDownload}
     >
       {opts.ext} {opts.res}
     </button>
