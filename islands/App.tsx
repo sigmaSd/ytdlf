@@ -7,6 +7,7 @@ export default function App() {
   const [fmts, setFmts] = useState<Opts[]>([]);
   const [meta, setMeta] = useState<{ name: string; img: string } | null>();
   const [directUrl, setDirectUrl] = useState("");
+  const [ind, setInd] = useState("");
 
   if (
     window.location && window.location.href == "https://ytdlf.sigmasd.repl.co/"
@@ -34,6 +35,8 @@ export default function App() {
     setMeta(null);
     setDirectUrl("");
 
+    setInd("Looking for video...");
+
     const { name, img, fmts } = await fetch("/api/download", {
       method: "POST",
       body: JSON.stringify({
@@ -43,6 +46,8 @@ export default function App() {
     }).then((r) => r.json());
     setMeta({ name, img });
     setFmts(fmts);
+
+    setInd("");
   };
 
   return (
@@ -75,6 +80,7 @@ export default function App() {
         >
           Download
         </button>
+        <p class="m-2 text-green-700">{ind}</p>
       </div>
 
       {meta && (
