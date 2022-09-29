@@ -15,6 +15,10 @@ Simple frontend for ytdl
 
 `deno run -A --unstable ytfview.ts`
 
+**or from replit instance** (click on `directLink` when downloading):
+
+https://ytdlf.sigmasd.repl.co/
+
 ## Dependencies
 
 `youtube-dl` needs to be in `PATH`
