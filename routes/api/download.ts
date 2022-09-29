@@ -2,7 +2,7 @@ import { Handlers } from "$fresh/server.ts";
 import { Opts } from "../../global.ts";
 import { DOWNLOAD_DIR } from "./downloadDir.ts";
 
-class O implements UnderlyingSink<string> {
+class LogSink implements UnderlyingSink<string> {
   #value: string[] = [];
   write?: UnderlyingSinkWriteCallback<string> | undefined = (chunk) => {
     this.#value.push(chunk);
@@ -17,9 +17,9 @@ class O implements UnderlyingSink<string> {
     this.#value.push(s);
   }
 }
-class Z extends WritableStream<string> {
-  #sink: O;
-  constructor(sink: O) {
+class LogStream extends WritableStream<string> {
+  #sink: LogSink;
+  constructor(sink: LogSink) {
     super(sink);
     this.#sink = sink;
   }
@@ -34,7 +34,7 @@ class Z extends WritableStream<string> {
   }
 }
 
-let out: Z | null = null;
+let out: LogStream | null = null;
 
 let activeYt: Deno.Child | null = null;
 
@@ -44,7 +44,7 @@ export const handler: Handlers = {
 
     if (method == "download") {
       activeYt = null;
-      out = new Z(new O());
+      out = new LogStream(new LogSink());
 
       activeYt = Deno.spawnChild("youtube-dl", {
         args: [url, "-f", code, "-o", "%(title)s-%(format)s.%(ext)s"],
