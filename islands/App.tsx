@@ -8,7 +8,7 @@ export default function App() {
   const [meta, setMeta] = useState<{ name: string; img: string } | null>();
   const [directUrl, setDirectUrl] = useState("");
   const [ind, setInd] = useState("");
-  const [id, setId] = useState();
+  const [id, setId] = useState(0);
 
   useEffect(() => {
     // NOTE: using localhost has the nice effect
@@ -79,7 +79,7 @@ export default function App() {
         <p class="m-2 text-green-700">{ind}</p>
       </div>
 
-      {id && meta && (
+      {meta && (
         <div>
           <Meta name={meta.name} img={meta.img} />
           <div class="grid grid-cols-4 gap-4">
