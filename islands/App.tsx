@@ -61,7 +61,7 @@ export default function App() {
         />
         <button
           disabled={disableDown}
-          class="text-white rounded-md font-bold text-lg"
+          class="text-white rounded-md font-bold text-lg p-1"
           style={{
             backgroundColor: disableDown ? "grey" : "red",
             cursor: disableDown ? "default" : "pointer",
