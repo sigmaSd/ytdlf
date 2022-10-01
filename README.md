@@ -9,11 +9,11 @@ Simple frontend for ytdl
 
 **local server**:
 
-`deno run -A --unstable main.ts`
+`deno task start:release`
 
 **or using webview**:
 
-`deno run -A --unstable ytfview.ts`
+`deno task start:webview`
 
 **or from replit instance**:
 
