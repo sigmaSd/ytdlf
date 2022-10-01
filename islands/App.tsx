@@ -79,7 +79,7 @@ export default function App() {
       {meta && (
         <div>
           <Meta name={meta.name} img={meta.img} />
-          <div class="grid grid-cols-4 gap-4">
+          <div class="grid grid-cols-4 gap-4 m-4">
             {fmts.map((opts) => (
               <Format
                 id={id}
