@@ -109,6 +109,7 @@ export default function App() {
       )}
       {directUrl && (
         <a
+          target="_blank"
           class="text-center text-lg text-blue-800"
           href={directUrl}
         >
