@@ -34,7 +34,7 @@ export const handler: Handlers = {
       );
       return new Response(directUrl);
     } else if (method == "download") {
-      if (!activeSockets) {
+      if (activeSockets.length === 0) {
         // Can happen on remote sites like replit
         // Don't bother downloading
         return new Response();
