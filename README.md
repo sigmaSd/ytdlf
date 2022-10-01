@@ -19,6 +19,8 @@ Simple frontend for ytdl
 
 https://ytdlf.sigmasd.repl.co/
 
+the instance itself is at https://replit.com/@sigmasd/ytdlf
+
 ## Dependencies
 
 `youtube-dl` needs to be in `PATH`
