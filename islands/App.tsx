@@ -11,6 +11,8 @@ export default function App() {
   const [id, setId] = useState();
 
   useEffect(() => {
+    // NOTE: using localhost has the nice effect
+    // that it doesn't work on remote sites like replit
     const ws = new WebSocket("ws://localhost:8000/ws");
     ws.onmessage = (msg) => {
       const data = JSON.parse(msg.data);

@@ -1,6 +1,6 @@
 import { Handlers } from "$fresh/server.ts";
 import { Opts } from "../../global.ts";
-import { getSocketById } from "../ws.ts";
+import { activeSockets, getSocketById } from "../ws.ts";
 
 import download_dir from "https://deno.land/x/dir@1.5.1/download_dir/mod.ts";
 import { ensureDir } from "https://deno.land/std@0.152.0/fs/ensure_dir.ts";
@@ -34,6 +34,11 @@ export const handler: Handlers = {
       );
       return new Response(directUrl);
     } else if (method == "download") {
+      if (!activeSockets) {
+        // Can happen on remote sites like replit
+        // Don't bother downloading
+        return new Response();
+      }
       const yt = Deno.spawnChild("youtube-dl", {
         args: [url, "-f", code, "-o", "%(title)s-%(format)s.%(ext)s"],
         stdout: "piped",

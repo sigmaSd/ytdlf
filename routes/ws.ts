@@ -4,7 +4,7 @@ interface TagedSocket {
   id: number;
   socket: WebSocket;
 }
-const activeSockets: TagedSocket[] = [];
+export const activeSockets: TagedSocket[] = [];
 export const getSocketById = (id: number) =>
   activeSockets.find((as) => as.id == id)?.socket;
 
