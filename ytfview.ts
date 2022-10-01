@@ -6,9 +6,11 @@ const worker = new Worker(
   { type: "module" },
 );
 
-const webview = new Webview();
+worker.onmessage = () => {
+  const webview = new Webview();
 
-webview.navigate("http://localhost:8000/");
-webview.run();
+  webview.navigate("http://localhost:8000/");
+  webview.run();
 
-worker.terminate();
+  worker.terminate();
+};
