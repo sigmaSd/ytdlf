@@ -9,6 +9,7 @@ export default function App() {
   const [directUrl, setDirectUrl] = useState("");
   const [ind, setInd] = useState("");
   const [id, setId] = useState(0);
+  const [disableDown, setDisableDown] = useState(false);
 
   useEffect(() => {
     // NOTE: using localhost has the nice effect
@@ -27,6 +28,8 @@ export default function App() {
   }, []);
 
   const getFormats = async () => {
+    setDisableDown(true);
+
     setYtOut("");
     setMeta(null);
     setDirectUrl("");
@@ -44,34 +47,25 @@ export default function App() {
     setFmts(fmts);
 
     setInd("");
+    setDisableDown(false);
   };
 
   return (
     <div class="flex flex-col gap-4">
       <div class="text-lg flex-col justify-center text-center">
         <input
-          class="
-        form-control
-        block
-        w-full
-        px-3
-        py-1.5
-        text-base
-        font-normal
-        text-gray-700
-        bg-white bg-clip-padding
-        border border-solid border-gray-300
-        rounded
-        transition
-        ease-in-out
-        m-4
-        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+          class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-4 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
           onChange={(e) => setUrl((e.target as HTMLInputElement).value)}
           value={url}
           placeholder="Enter url here"
         />
         <button
-          class="bg-red-600 text-white rounded-md font-bold text-lg"
+          disabled={disableDown}
+          class="text-white rounded-md font-bold text-lg"
+          style={{
+            backgroundColor: disableDown ? "grey" : "red",
+            cursor: disableDown ? "default" : "pointer",
+          }}
           onClick={getFormats}
         >
           Download
