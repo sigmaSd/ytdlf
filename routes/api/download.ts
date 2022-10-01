@@ -1,46 +1,28 @@
 import { Handlers } from "$fresh/server.ts";
 import { Opts } from "../../global.ts";
-import { DOWNLOAD_DIR } from "./downloadDir.ts";
+import { getSocketById } from "../ws.ts";
 
-class LogSink implements UnderlyingSink<string> {
-  #value: string[] = [];
-  write?: UnderlyingSinkWriteCallback<string> | undefined = (chunk) => {
-    this.#value.push(chunk);
-  };
-  read() {
-    return this.#value;
-  }
-  popFront() {
-    return this.#value.shift();
-  }
-  push(s: string) {
-    this.#value.push(s);
-  }
-}
+import download_dir from "https://deno.land/x/dir@1.5.1/download_dir/mod.ts";
+import { ensureDir } from "https://deno.land/std@0.152.0/fs/ensure_dir.ts";
+
+export const DOWNLOAD_DIR = (download_dir() || ".") + "/ytf";
+await ensureDir(DOWNLOAD_DIR);
+
 class LogStream extends WritableStream<string> {
-  #sink: LogSink;
-  constructor(sink: LogSink) {
-    super(sink);
-    this.#sink = sink;
-  }
-  read() {
-    return this.#sink.read();
-  }
-  popFront() {
-    return this.#sink.popFront();
-  }
-  push(s: string) {
-    this.#sink.push(s);
+  constructor(id: number) {
+    super({
+      write(chunk) {
+        getSocketById(id)?.send(
+          JSON.stringify({ data: chunk }),
+        );
+      },
+    });
   }
 }
-
-let out: LogStream | null = null;
-
-let activeYt: Deno.Child | null = null;
 
 export const handler: Handlers = {
   async POST(req) {
-    const { url, code, method } = await req.json();
+    const { url, id, code, method } = await req.json();
 
     if (method == "getUrl") {
       const directUrl = new TextDecoder().decode(
@@ -52,17 +34,20 @@ export const handler: Handlers = {
       );
       return new Response(directUrl);
     } else if (method == "download") {
-      activeYt = null;
-      out = new LogStream(new LogSink());
-
-      activeYt = Deno.spawnChild("youtube-dl", {
+      const yt = Deno.spawnChild("youtube-dl", {
         args: [url, "-f", code, "-o", "%(title)s-%(format)s.%(ext)s"],
         stdout: "piped",
         stderr: "inherit",
         cwd: DOWNLOAD_DIR,
       });
-      await activeYt.stdout.pipeThrough(new TextDecoderStream()).pipeTo(out);
-      activeYt.status.then(() => out!.push("DONE"));
+      await yt.stdout.pipeThrough(new TextDecoderStream()).pipeTo(
+        new LogStream(id),
+      );
+      yt.status.then(() =>
+        getSocketById(id)?.send(
+          JSON.stringify({ done: true, dirPath: DOWNLOAD_DIR }),
+        )
+      );
 
       return new Response();
     } else if (method == "format") {
@@ -105,11 +90,5 @@ export const handler: Handlers = {
     } else {
       throw "unkown method: " + method;
     }
-  },
-  GET() {
-    if (!out) return new Response("");
-    const line = out.popFront();
-    if (!line) return new Response("");
-    return new Response(line);
   },
 };

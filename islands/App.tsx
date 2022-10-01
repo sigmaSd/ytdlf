@@ -8,20 +8,20 @@ export default function App() {
   const [meta, setMeta] = useState<{ name: string; img: string } | null>();
   const [directUrl, setDirectUrl] = useState("");
   const [ind, setInd] = useState("");
+  const [id, setId] = useState();
 
   useEffect(() => {
-    setInterval(async () => {
-      const line = await fetch("/api/download").then((r) => r.text());
-      if (!line) return;
-      if (line == "DONE") {
-        const downloadDir = await fetch("/api/downloadDir").then((r) =>
-          r.text()
-        );
-        setYtOut("Downloaded video to: " + downloadDir);
-      } else {
-        setYtOut(line);
+    const ws = new WebSocket("ws://localhost:8000/ws");
+    ws.onmessage = (msg) => {
+      const data = JSON.parse(msg.data);
+      if (data.id) {
+        setId(data.id);
+      } else if (data.data) {
+        setYtOut(data.data);
+      } else if (data.done) {
+        setYtOut(`Downloaded to ${data.dirPath}`);
       }
-    }, 100);
+    };
   }, []);
 
   const getFormats = async () => {
@@ -77,12 +77,13 @@ export default function App() {
         <p class="m-2 text-green-700">{ind}</p>
       </div>
 
-      {meta && (
+      {id && meta && (
         <div>
           <Meta name={meta.name} img={meta.img} />
           <div class="grid grid-cols-4 gap-4">
             {fmts.map((opts) => (
               <Format
+                id={id}
                 opts={opts}
                 url={url}
                 setFmts={setFmts}
@@ -117,9 +118,10 @@ export default function App() {
 }
 
 function Format(
-  { opts, url, setFmts, setDirectUrl }: {
+  { opts, url, setFmts, id, setDirectUrl }: {
     opts: Opts;
     url: string;
+    id: number;
     setFmts: StateUpdater<Opts[]>;
     setDirectUrl: StateUpdater<string>;
   },
@@ -142,6 +144,7 @@ function Format(
         url,
         code: opts.code,
         method: "download",
+        id,
       }),
     }).then((r) => r.text());
   };

@@ -15,7 +15,7 @@ Simple frontend for ytdl
 
 `deno run -A --unstable ytfview.ts`
 
-**or from replit instance**: (bugy)
+**or from replit instance**:
 
 https://ytdlf.sigmasd.repl.co/
 
