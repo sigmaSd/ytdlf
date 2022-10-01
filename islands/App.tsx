@@ -43,8 +43,11 @@ export default function App() {
         method: "format",
       }),
     }).then((r) => r.json());
-    setMeta({ name, img });
-    setFmts(fmts);
+
+    if (fmts) {
+      setMeta({ name, img });
+      setFmts(fmts);
+    }
 
     setInd("");
     setDisableDown(false);
