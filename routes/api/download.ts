@@ -87,11 +87,16 @@ const getFormats = async (url: string) => {
       ext: parts[1],
       res: parts[2],
     };
+    if (line.includes("video only")) {
+      // NOTE: is this actually useful?
+      continue;
+    }
     if (res.find((e) => e.ext == fmt.ext && e.res == fmt.res)) {
       continue;
     }
     res.push(fmt);
   }
+
   return { name: meta[0], img: meta[1], fmts: res };
 };
 
