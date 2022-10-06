@@ -28,12 +28,10 @@ class LogStream extends WritableStream<string> {
         getSocketById(id)?.send(
           JSON.stringify({ done: true, dirPath: DOWNLOAD_DIR }),
         );
-      } catch {/*client exited*/}
+      } catch { /*client exited*/ }
     });
   }
   static clean(s: string): string {
-    console.log("s: ", s);
-
     return s.replaceAll("\r\x1b[K", "");
   }
 }
