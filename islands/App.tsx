@@ -86,7 +86,6 @@ export default function App() {
                 id={id}
                 opts={opts}
                 url={url}
-                setFmts={setFmts}
                 setDirectUrl={setDirectUrl}
                 downloading={downloading}
                 setDownloading={setDownloading}
@@ -122,11 +121,10 @@ export default function App() {
 }
 
 function Format(
-  { opts, url, setFmts, id, downloading, setDirectUrl, setDownloading }: {
+  { opts, url, id, downloading, setDirectUrl, setDownloading }: {
     opts: Opts;
     url: string;
     id: number;
-    setFmts: StateUpdater<Opts[]>;
     setDirectUrl: StateUpdater<string>;
     downloading: boolean;
     setDownloading: StateUpdater<boolean>;
@@ -134,6 +132,7 @@ function Format(
 ) {
   const triggerDownload = async () => {
     setDownloading(true);
+    setDirectUrl("");
 
     await fetch("/api/download", {
       method: "POST",
