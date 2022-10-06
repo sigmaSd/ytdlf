@@ -8,6 +8,7 @@ const worker = new Worker(
 
 worker.onmessage = () => {
   const webview = new Webview();
+  webview.title = "Youtube Downloader";
 
   webview.navigate("http://localhost:8000/");
   webview.run();
