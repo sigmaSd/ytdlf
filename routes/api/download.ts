@@ -70,21 +70,21 @@ const download = async (
 
 const getFormats = async (url: string) => {
   if (!url) return new Response("");
-  const meta = new TextDecoder().decode(
-    await Deno.spawn("youtube-dl", {
+  const [meta, rawFmt] = await Promise.all([
+    Deno.spawn("youtube-dl", {
       args: ["-e", "--get-thumbnail", url],
       stdout: "piped",
-    }).then((r) => r.stdout),
-  ).split("\n");
+    }).then((r) => new TextDecoder().decode(r.stdout).split("\n")),
 
-  const raw = await Deno.spawn("youtube-dl", {
-    args: ["-F", url],
-    stdout: "piped",
-  }).then((r) => r.stdout);
+    Deno.spawn("youtube-dl", {
+      args: ["-F", url],
+      stdout: "piped",
+    }).then((r) => r.stdout),
+  ]);
 
   const res: Opts[] = [];
 
-  const lines = new TextDecoder().decode(raw).split("\n");
+  const lines = new TextDecoder().decode(rawFmt).split("\n");
 
   const s = lines.findIndex((v) => v.startsWith("format"));
   if (!s) return new Response("");

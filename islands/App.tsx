@@ -134,24 +134,26 @@ function Format(
     setDownloading(true);
     setDirectUrl("");
 
-    await fetch("/api/download", {
-      method: "POST",
-      body: JSON.stringify({
-        url,
-        code: opts.code,
-        method: "getUrl",
-      }),
-    }).then((r) => r.text()).then(setDirectUrl);
+    await Promise.all([
+      await fetch("/api/download", {
+        method: "POST",
+        body: JSON.stringify({
+          url,
+          code: opts.code,
+          method: "getUrl",
+        }),
+      }).then((r) => r.text()).then(setDirectUrl),
 
-    await fetch("/api/download", {
-      method: "POST",
-      body: JSON.stringify({
-        url,
-        code: opts.code,
-        method: "download",
-        id,
+      await fetch("/api/download", {
+        method: "POST",
+        body: JSON.stringify({
+          url,
+          code: opts.code,
+          method: "download",
+          id,
+        }),
       }),
-    }).then((r) => r.text());
+    ]);
     setDownloading(false);
   };
   return (
