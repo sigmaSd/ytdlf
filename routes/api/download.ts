@@ -9,7 +9,7 @@ export const DOWNLOAD_DIR = (download_dir() || ".") + "/ytf";
 await ensureDir(DOWNLOAD_DIR);
 
 class LogStream extends WritableStream<string> {
-  constructor(id: number) {
+  constructor(yt: Deno.Child, id: number) {
     super({
       write(chunk) {
         try {
@@ -18,11 +18,22 @@ class LogStream extends WritableStream<string> {
           );
         } catch {
           // client probably closed the page
+          // stop yt
+          yt.kill();
         }
       },
     });
+    yt.status.then(() => {
+      try {
+        getSocketById(id)?.send(
+          JSON.stringify({ done: true, dirPath: DOWNLOAD_DIR }),
+        );
+      } catch {/*client exited*/}
+    });
   }
   static clean(s: string): string {
+    console.log("s: ", s);
+
     return s.replaceAll("\r\x1b[K", "");
   }
 }
@@ -59,12 +70,7 @@ const download = async (
     cwd: DOWNLOAD_DIR,
   });
   await yt.stdout.pipeThrough(new TextDecoderStream()).pipeTo(
-    new LogStream(id),
-  );
-  yt.status.then(() =>
-    getSocketById(id)?.send(
-      JSON.stringify({ done: true, dirPath: DOWNLOAD_DIR }),
-    )
+    new LogStream(yt, id),
   );
 };
 
