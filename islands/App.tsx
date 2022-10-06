@@ -67,8 +67,8 @@ export default function App() {
           disabled={downloading || disableDown}
           class="text-white rounded-md font-bold text-lg p-1"
           style={{
-            backgroundColor: disableDown ? "grey" : "red",
-            cursor: disableDown ? "default" : "pointer",
+            backgroundColor: (downloading || disableDown) ? "grey" : "red",
+            cursor: (downloading || disableDown) ? "default" : "pointer",
           }}
           onClick={getFormats}
         >
