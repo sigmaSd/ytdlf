@@ -43,7 +43,14 @@ const download = async (
     return new Response();
   }
   const yt = Deno.spawnChild("youtube-dl", {
-    args: [url, "-f", code.toString(), "-o", "%(title)s-%(format)s.%(ext)s"],
+    args: [
+      url,
+      "-f",
+      code.toString(),
+      "-o",
+      "%(title)s-%(format)s.%(ext)s",
+      "--no-part",
+    ],
     stdout: "piped",
     stderr: "inherit",
     cwd: DOWNLOAD_DIR,
