@@ -14,13 +14,16 @@ class LogStream extends WritableStream<string> {
       write(chunk) {
         try {
           getSocketById(id)?.send(
-            JSON.stringify({ data: chunk }),
+            JSON.stringify({ data: LogStream.clean(chunk) }),
           );
         } catch {
           // client probably closed the page
         }
       },
     });
+  }
+  static clean(s: string): string {
+    return s.replaceAll("\r\x1b[K", "");
   }
 }
 

@@ -97,7 +97,7 @@ export default function App() {
       {(downloading || ytOut) && (
         <textarea
           placeholder="loading..."
-          class="border-black border m-4 text-center text-lg"
+          class="border m-4 text-center text-lg rounded italic font-bold border-red-400 text-blue-800"
           readonly={true}
           autocomplete="off"
           autocorrect="off"
