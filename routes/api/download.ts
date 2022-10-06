@@ -12,9 +12,13 @@ class LogStream extends WritableStream<string> {
   constructor(id: number) {
     super({
       write(chunk) {
-        getSocketById(id)?.send(
-          JSON.stringify({ data: chunk }),
-        );
+        try {
+          getSocketById(id)?.send(
+            JSON.stringify({ data: chunk }),
+          );
+        } catch {
+          // client probably closed the page
+        }
       },
     });
   }

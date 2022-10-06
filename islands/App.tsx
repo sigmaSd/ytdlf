@@ -10,6 +10,7 @@ export default function App() {
   const [ind, setInd] = useState("");
   const [id, setId] = useState(0);
   const [disableDown, setDisableDown] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
     // NOTE: using localhost has the nice effect
@@ -63,11 +64,11 @@ export default function App() {
           placeholder="Enter url here"
         />
         <button
-          disabled={disableDown}
+          disabled={downloading || disableDown}
           class="text-white rounded-md font-bold text-lg p-1"
           style={{
-            backgroundColor: disableDown ? "grey" : "red",
-            cursor: disableDown ? "default" : "pointer",
+            backgroundColor: (downloading || disableDown) ? "grey" : "red",
+            cursor: (downloading || disableDown) ? "default" : "pointer",
           }}
           onClick={getFormats}
         >
@@ -87,13 +88,16 @@ export default function App() {
                 url={url}
                 setFmts={setFmts}
                 setDirectUrl={setDirectUrl}
+                downloading={downloading}
+                setDownloading={setDownloading}
               />
             ))}
           </div>
         </div>
       )}
-      {ytOut && (
+      {(downloading || ytOut) && (
         <textarea
+          placeholder="loading..."
           class="border-black border m-4 text-center text-lg"
           readonly={true}
           autocomplete="off"
@@ -118,16 +122,18 @@ export default function App() {
 }
 
 function Format(
-  { opts, url, setFmts, id, setDirectUrl }: {
+  { opts, url, setFmts, id, downloading, setDirectUrl, setDownloading }: {
     opts: Opts;
     url: string;
     id: number;
     setFmts: StateUpdater<Opts[]>;
     setDirectUrl: StateUpdater<string>;
+    downloading: boolean;
+    setDownloading: StateUpdater<boolean>;
   },
 ) {
   const triggerDownload = async () => {
-    setFmts([]);
+    setDownloading(true);
 
     await fetch("/api/download", {
       method: "POST",
@@ -147,9 +153,15 @@ function Format(
         id,
       }),
     }).then((r) => r.text());
+    setDownloading(false);
   };
   return (
     <button
+      disabled={downloading}
+      style={{
+        backgroundColor: downloading ? "grey" : "white",
+        cursor: downloading ? "default" : "pointer",
+      }}
       class="border border-blue-600 rounded-md text-lg text-red-800 font-bold"
       onClick={triggerDownload}
     >
