@@ -135,7 +135,7 @@ function Format(
     setDirectUrl("");
 
     await Promise.all([
-      await fetch("/api/download", {
+      fetch("/api/download", {
         method: "POST",
         body: JSON.stringify({
           url,
@@ -144,7 +144,7 @@ function Format(
         }),
       }).then((r) => r.text()).then(setDirectUrl),
 
-      await fetch("/api/download", {
+      fetch("/api/download", {
         method: "POST",
         body: JSON.stringify({
           url,
