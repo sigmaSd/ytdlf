@@ -2,8 +2,8 @@
 
 Simple frontend for ytdl
 
-![Screenshot from 2022-09-29 21-06-32](https://user-images.githubusercontent.com/22427111/193131737-bf6b9835-42d9-49c4-987f-d9d1329889a3.png)
-![Screenshot from 2022-09-29 21-06-45](https://user-images.githubusercontent.com/22427111/193131681-37f9e5d6-8175-4ca1-8ee9-66dafb640dc6.png)
+![image](https://user-images.githubusercontent.com/22427111/194400540-cef665b0-aa37-4a52-8bbe-8b5c5340bd02.png)
+![image](https://user-images.githubusercontent.com/22427111/194400380-0a9b5986-b94d-486a-a21f-dd47038bd9e5.png)
 
 ## Usage
 
