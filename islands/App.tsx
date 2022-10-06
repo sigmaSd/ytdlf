@@ -134,7 +134,6 @@ function Format(
 ) {
   const triggerDownload = async () => {
     setDownloading(true);
-    //setFmts([]);
 
     await fetch("/api/download", {
       method: "POST",
