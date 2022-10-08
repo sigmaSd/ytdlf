@@ -19,6 +19,8 @@ Simple frontend for ytdl
 
 https://ytdlf.sigmasd.repl.co/
 
+This site is installable as a PWA web app with support for share target
+
 the instance itself is at https://replit.com/@sigmasd/ytdlf
 
 ## Dependencies
