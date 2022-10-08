@@ -28,6 +28,7 @@ export default function App({ preSelectedUrl }: { preSelectedUrl?: string }) {
     };
   }, []);
 
+  /* Support for pwa share-target */
   useEffect(() => {
     if (preSelectedUrl) {
       setUrl(preSelectedUrl);

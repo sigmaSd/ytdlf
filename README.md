@@ -20,7 +20,8 @@ Simple frontend for ytdl
 https://ytdlf.sigmasd.repl.co/
 
 This site is installable as a PWA web app with support for
-[share-target](https://web.dev/web-share-target/) (needs chrome app for the install)
+[share-target](https://web.dev/web-share-target/) (needs chrome app for the
+install)
 
 the instance itself is at https://replit.com/@sigmasd/ytdlf
 

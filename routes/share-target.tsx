@@ -1,3 +1,5 @@
+/* Support for pwa share-target */
+
 import { Handlers, PageProps } from "$fresh/server.ts";
 import App from "../islands/App.tsx";
 
