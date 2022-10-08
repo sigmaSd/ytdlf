@@ -3,7 +3,7 @@ import App from "../islands/App.tsx";
 
 export const handler: Handlers = {
   async GET(req, ctx) {
-    const url = new URL(req.url).searchParams.get('url');
+    const url = new URL(req.url).searchParams.get("text");
     console.log("called from share");
     console.log(url);
 
