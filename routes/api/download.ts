@@ -120,16 +120,25 @@ export const handler: Handlers = {
 
     switch (method) {
       case "getUrl": {
+        if (!code || !url) {
+          return error500;
+        }
         const directUrl = await getUrl({ url, code });
         return new Response(directUrl);
       }
       case "format": {
+        if (!url) {
+          return error500;
+        }
         const formats = await getFormats(url);
         return new Response(
           JSON.stringify(formats),
         );
       }
       case "download": {
+        if (!id || !url || !code) {
+          return error500;
+        }
         await download({ id, url, code });
         return new Response();
       }
@@ -139,3 +148,5 @@ export const handler: Handlers = {
     }
   },
 };
+
+const error500 = new Response("", { status: 500 });
