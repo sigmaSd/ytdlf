@@ -10,8 +10,8 @@ export const handler: Handlers = {
 };
 
 export default function Page({ data }: PageProps<{ url: string } | null>) {
-  if (!data) {
-    return <h1>User not found</h1>;
+  if (!data?.url) {
+    return <App />;
   }
 
   return <App preSelectedUrl={data.url} />;
