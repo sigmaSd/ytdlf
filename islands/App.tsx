@@ -1,7 +1,7 @@
 import { StateUpdater, useEffect, useState } from "preact/hooks";
 import { Opts } from "../global.ts";
 
-export default function App() {
+export default function App({ preSelectedUrl }: { preSelectedUrl?: string }) {
   const [url, setUrl] = useState("");
   const [ytOut, setYtOut] = useState("");
   const [fmts, setFmts] = useState<Opts[]>([]);
@@ -28,7 +28,14 @@ export default function App() {
     };
   }, []);
 
-  const getFormats = async () => {
+  useEffect(() => {
+    if (preSelectedUrl) {
+      setUrl(preSelectedUrl);
+      getFormats(preSelectedUrl);
+    }
+  }, []);
+
+  const getFormats = async (url: string) => {
     setDisableDown(true);
 
     setYtOut("");
@@ -70,7 +77,7 @@ export default function App() {
             backgroundColor: (downloading || disableDown) ? "grey" : "red",
             cursor: (downloading || disableDown) ? "default" : "pointer",
           }}
-          onClick={getFormats}
+          onClick={() => getFormats(url)}
         >
           Download
         </button>
