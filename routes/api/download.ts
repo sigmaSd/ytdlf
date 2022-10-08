@@ -83,12 +83,12 @@ const getFormats = async (url: string) => {
     Deno.spawn("youtube-dl", {
       args: ["-F", url],
       stdout: "piped",
-    }).then((r) => r.stdout),
+    }).then((r) => new TextDecoder().decode(r.stdout).split("\n")),
   ]);
 
   const res: Opts[] = [];
 
-  const lines = new TextDecoder().decode(rawFmt).split("\n");
+  const lines = rawFmt;
 
   const s = lines.findIndex((v) => v.startsWith("format"));
   if (!s) return new Response("");
@@ -144,7 +144,7 @@ export const handler: Handlers = {
       }
       default:
         console.error("Unkown method: ", method);
-        return new Response("", { status: 500 });
+        return error500;
     }
   },
 };
