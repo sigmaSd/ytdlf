@@ -118,7 +118,7 @@ export default function App({ preSelectedUrl }: { preSelectedUrl?: string }) {
       {directUrl && (
         <a
           target="_blank"
-          class="text-center text-lg text-blue-800"
+          class="text-center text-lg text-blue-800 font-bold bg-green-200"
           href={directUrl}
         >
           Direct Link
@@ -164,13 +164,24 @@ function Format(
     ]);
     setDownloading(false);
   };
+
+  const downButtonStyle = {
+    top: "0",
+    left: "0",
+    width: "100%",
+    height: "100%",
+    padding: "12px 27px",
+    borderRadius: "12px",
+    fontSize: "1.1rem",
+    color: "white",
+    background: downloading ? "grey" : "hsl(345deg 100% 47%)",
+    cursor: downloading ? "default" : "pointer",
+  };
+
   return (
     <button
       disabled={downloading}
-      style={{
-        backgroundColor: downloading ? "grey" : "white",
-        cursor: downloading ? "default" : "pointer",
-      }}
+      style={downButtonStyle}
       class="border border-blue-600 rounded-md text-lg text-red-800 font-bold"
       onClick={triggerDownload}
     >
@@ -181,7 +192,7 @@ function Format(
 
 function Meta({ name, img }: { name: string; img: string }) {
   return (
-    <div class="flex  justify-center gap-4 m-4">
+    <div class="grid justify-center gap-4 m-4">
       <h2 class="text-lg font-bold">{name}</h2>
       <img class="w-72" src={img} />
     </div>
