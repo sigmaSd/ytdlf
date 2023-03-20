@@ -28,3 +28,5 @@ the instance itself is at https://replit.com/@sigmasd/ytdlf
 ## Dependencies
 
 `youtube-dl` needs to be in `PATH`
+
+If youtube-dl latest release doesn't work (2021-12-17 doesn't), make sure to get a new release from `https://github.com/ytdl-patched/youtube-dl/releases`
