@@ -1,7 +1,7 @@
 {
   "tasks": {
-    "start": "deno run -A --unstable --watch=static/,routes/ dev.ts",
-    "start:release": "deno run -A --unstable main.ts",
+    "start": "deno run -A --watch=static/,routes/ dev.ts",
+    "start:release": "deno run -A main.ts",
     "start:webview": "deno run -A --unstable ytfview.ts"
   },
   "importMap": "./import_map.json",
