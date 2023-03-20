@@ -9,7 +9,7 @@ export const DOWNLOAD_DIR = (download_dir() || ".") + "/ytf";
 await ensureDir(DOWNLOAD_DIR);
 
 class LogStream extends WritableStream<string> {
-  constructor(yt: Deno.Child, id: number) {
+  constructor(yt: Deno.ChildProcess, id: number) {
     super({
       write(chunk) {
         try {
@@ -38,11 +38,11 @@ class LogStream extends WritableStream<string> {
 
 const getUrl = async ({ url, code }: { url: string; code: number }) => {
   return new TextDecoder().decode(
-    await Deno.spawn("youtube-dl", {
+    await new Deno.Command("youtube-dl", {
       args: [url, "-f", code.toString(), "-g"],
       stdout: "piped",
       stderr: "inherit",
-    }).then((r) => r.stdout),
+    }).output().then((r) => r.stdout),
   );
 };
 
@@ -54,7 +54,7 @@ const download = async (
     // Don't bother downloading
     return new Response();
   }
-  const yt = Deno.spawnChild("youtube-dl", {
+  const yt = new Deno.Command("youtube-dl", {
     args: [
       url,
       "-f",
@@ -66,7 +66,7 @@ const download = async (
     stdout: "piped",
     stderr: "inherit",
     cwd: DOWNLOAD_DIR,
-  });
+  }).spawn();
   await yt.stdout.pipeThrough(new TextDecoderStream()).pipeTo(
     new LogStream(yt, id),
   );
@@ -75,15 +75,15 @@ const download = async (
 const getFormats = async (url: string) => {
   if (!url) return new Response("");
   const [meta, rawFmt] = await Promise.all([
-    Deno.spawn("youtube-dl", {
+    await new Deno.Command("youtube-dl", {
       args: ["-e", "--get-thumbnail", url],
       stdout: "piped",
-    }).then((r) => new TextDecoder().decode(r.stdout).split("\n")),
+    }).output().then((r) => new TextDecoder().decode(r.stdout).split("\n")),
 
-    Deno.spawn("youtube-dl", {
+    await new Deno.Command("youtube-dl", {
       args: ["-F", url],
       stdout: "piped",
-    }).then((r) => new TextDecoder().decode(r.stdout).split("\n")),
+    }).output().then((r) => new TextDecoder().decode(r.stdout).split("\n")),
   ]);
 
   const res: Opts[] = [];
